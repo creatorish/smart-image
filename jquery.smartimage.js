@@ -5,8 +5,8 @@
  * 
  * Required: jQuery(http://jquery.com/)
  * License: MIT
- * Update: 2012/10/01
- * Version: 0.2.0
+ * Update: 2013/02/04
+ * Version: 0.2.1
  * Author: yuu.creatorish
  * URL: http://creatorish.com
  * PluginURL: http://creatorish.com/lab/4887
@@ -19,6 +19,7 @@ jQuery.easing.quart = function (x, t, b, c, d) {
 jQuery.fn.SmartImage = function(option) {
 	var target = this;
 	var options = {
+		position: "center",
 		minScale: NaN,
 		maxScale: 3,
 		zoom: true,
@@ -106,14 +107,53 @@ jQuery.fn.SmartImage = function(option) {
 		height = target.height();
 		
 		addEvent();
-		if (hasTouch) {
-			target.css({
-				position: "absolute",
-				top: "50%",
-				left: "50%"
-			});
-			resizeImage();
+		
+		target.css({
+			position: "absolute",
+			top: "50%",
+			left: "50%"
+		});
+		resizeImage();
+		
+		var pos = {
+			x: 0,
+			y: 0
+		};
+		var bounce = target.get(0).getBoundingClientRect();
+		
+		switch(options.position) {
+			case "topleft":
+				pos.x = bounce.width/2 + bounce.left;
+				pos.y = bounce.height/2 + bounce.top;
+				break;
+			case "topright":
+				pos.x = bounce.width/2 - bounce.right;
+				pos.y = bounce.height/2 - bounce.top;
+				break;
+			case "left":
+				pos.x = bounce.width/2 + bounce.left;
+				break;
+			case "right":
+				pos.x = bounce.width/2 - bounce.right;
+				break;
+			//以下TODO
+			case "bottomleft":
+				pos.x = bounce.width/2 + bounce.left;
+				pos.y = bounce.height/2 - bounce.bottom;
+			case "bottom":
+				pos.y = bounce.height/2 - bounce.bottom;
+				break;
+			case "bottomright":
+				pos.x = bounce.width/2 - bounce.right;
+				pos.y = bounce.height/2 - bounce.bottom;
+				break;
+			case "center":
+			default:
+				break;
 		}
+		
+		moveTo(pos.x,pos.y);
+		
 		target.animate({
 			opacity: 1
 		},options.fade,"quart",function() {
